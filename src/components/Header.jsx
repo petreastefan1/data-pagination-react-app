@@ -2,7 +2,7 @@ import {useRef} from "react";
 import ModalAddStudent from "./modalAddStudent";
 
 
-function Header({search,page,setNewStudent,addBackground,refresh,dataPack}){
+function Header({search,setNewStudent,addBackground,dataPack,getStudents,footer}){
 
     let inputName = useRef()
 
@@ -29,16 +29,17 @@ function Header({search,page,setNewStudent,addBackground,refresh,dataPack}){
         if(inputName.current.value.length>0) {
             search(checkName(inputName.current.value))
         }
-        if(inputName.current.value.length==0){
-            search(page)
+        else if(inputName.current.value.length<1){
+            getStudents(1,9)
         }
+
         }
     function modalAddClose(){
         setNewStudent("")
         addBackground("new-student-container")
     }
-const handeAdd=()=>{
-    setNewStudent(<ModalAddStudent modalClose={modalAddClose} refresh={refresh} dataPack={dataPack}/>)
+const handleAdd=()=>{
+    setNewStudent(<ModalAddStudent modalClose={modalAddClose}dataPack={dataPack}/>)
     addBackground("new-student-container transparent-background")
     }
 
@@ -51,7 +52,7 @@ const handeAdd=()=>{
                 <input ref={inputName} id="search" placeholder="Search by name..."/>
                     <button onClick={handleSearch} type="button" className ="search-btn"><img src="/mockups/icn-search.svg" alt="Search icon"/></button>
             </label>
-            <button onClick={handeAdd} className="add-student-btn">Add Student</button>
+            <button onClick={handleAdd} className="add-student-btn">Add Student</button>
 
 
         </header>

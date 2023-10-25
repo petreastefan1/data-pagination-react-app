@@ -4,9 +4,10 @@ import Footer from "./components/Footer"
 import React, {useState, useEffect} from "react"
 
 function App() {
+
     const [students, setStudents] = useState([])
-    function getAllStudents(number) {
-        fetch(`https://randomuser.me/api/?page=${number}&results=9&seed=abc`)
+    function getAllStudents(number,quantity) {
+        fetch(`https://randomuser.me/api/?page=${number}&results=${quantity}&seed=abc`)
             .then(data => {
                 return data.json()
             })
@@ -18,21 +19,22 @@ function App() {
     }
 
     useEffect(() => {
-        getAllStudents(1)
+        getAllStudents(1,9)
     }, [])
 
 
 
+// console.log(students[0].email)
 
-
-    const [catalog, setCatalog] = useState(students)
-    let pageNumber = []
+    const [catalog, setCatalog] = useState([])
+    let [pageNumber,setPageNumber] = useState(footerButtons())
     let [page, setPage] = useState(pagination(students, 1))
     const [modal, setModal] = useState("")
     const [background, setBackground] = useState("modal-container")
     let [defaultPage, setDefaultPage] = useState(1)
     const [modalNewStudent,setModalNewStudent]=useState("")
     const[studentContainer,setstudentContainer] =useState("new-student-container")
+   const [footer,setFooter] = useState(<Footer />)
     function pagination(data, page) {
         let filler = [];
         for (let i = 9 * (page - 1); i < data.length && i <= 9 * page - 1; i++) {
@@ -42,58 +44,60 @@ function App() {
     }
 
 //gaseste numarul de butoane in functie de nr de studenti
-    for (let i = 1; i <= Math.ceil(students.length / 9); i++) {
-        pageNumber.push({page: i})
+    function footerButtons(){
+        let aux = []
+        for (let i = 1; i <= Math.ceil(students.length / 9); i++) {
+            aux.push({page: i})
+        }
+        return aux
+
     }
+
 //
 
     const handlePage = (event) => {
         let obj = event.target
         let pageNumber = obj.innerHTML
-        getAllStudents(pageNumber);
+        setPageNumber(pageNumber)
+        getAllStudents(pageNumber,9);
 
     }
-//     const handleSearch = (student) => {
-//         setPage(student)
-//     }
+    const handleSearch = (student) => {
+        setStudents(student)
+
+    }
 //
-//     let handleRemove = (student) => {
-//
-//
-//         let aux = catalog.filter(user => user != student);
-//
-//
-//         setCatalog(aux);
-//         setPage(pagination(aux, defaultPage))
-//         setModal("")
-//         setBackground("modal-container")
-//
-//     }
+    let handleRemove = (student) => {
 
 
+        let aux = students.filter(user => user != student);
+        //
+        setStudents(aux)
+        setPage(pagination(aux, defaultPage))
+        setModal("")
+        setBackground("modal-container")
 
-
+    }
     return (
         <>
 
-            {/*<section className={studentContainer}>*/}
+            <section className={studentContainer}>
 
-            {/*    {modalNewStudent}*/}
+                {modalNewStudent}
 
-            {/*</section>*/}
+            </section>
 
-            {/*<section className={background}>*/}
+            <section className={background}>
 
-            {/*    {modal}*/}
+                {modal}
 
-            {/*</section>*/}
+            </section>
 
-            {/*<Header search={handleSearch}*/}
-            {/*        page={pagination(catalog, 1)}*/}
-            {/*        setNewStudent={setModalNewStudent}*/}
-            {/*        addBackground={setstudentContainer}*/}
-            {/*        refresh={setCatalog}/>*/}
-            {/*        dataPack={students}*/}
+            <Header dataPack={students} search={handleSearch} getStudents={getAllStudents} footer={setFooter} setNewStudent={setModalNewStudent} addBackground={setstudentContainer}/>
+
+
+
+
 
 
 
@@ -104,8 +108,9 @@ function App() {
                         return <Card user={element}
                                      modalState={setModal}
                                      background={setBackground}
-                                     // remove={handleRemove}
-                                     dataPack={students}/>
+                                     remove={handleRemove}
+                                     dataPack={students}
+/>
                     })
                 }
 
@@ -114,12 +119,14 @@ function App() {
 
                 <ul className="link-list" onClick={handlePage}>
 
+
+
                     {
-                        pageNumber.map((number, index) => {
-                            return <Footer pages={number}
-                                           key={index}/>
-                        })
+                        footer
                     }
+
+
+
 
 
                 </ul>

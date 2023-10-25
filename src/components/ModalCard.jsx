@@ -13,6 +13,7 @@ function ModalCard({student, modalState, background, remove,dataPack}) {
     }
 
     function handleRemove() {
+
         remove(currentstudent)
     }
 
